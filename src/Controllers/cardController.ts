@@ -16,6 +16,7 @@ export async function CreateCard(req: Request, res: Response){
 	const apiKey = req.headers['x-api-key']?.toString() || '';
 	await cardService.VerifyCardOwner(apiKey);
 	await cardService.VerifyEmployee(Number(employeeId));
+	await cardService.VerifyEmployeeCardType(type, Number(employeeId));
 
 	return res.status(200).send({employeeId, type, cardNumber, cardCVC, date, encryptedCVC});
 }
