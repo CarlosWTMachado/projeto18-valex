@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import dayjs from 'dayjs';
 import Cryptr from 'cryptr';
 import { CRYPTRKEY } from '../environmentVariable';
-import {VerifyCardOwner} from '../Services/cardService';
+import * as cardService from '../Services/cardService';
 
 export async function CreateCard(req: Request, res: Response){
 	const {employeeId, type} = req.body;
@@ -14,7 +14,8 @@ export async function CreateCard(req: Request, res: Response){
 	const encryptedCVC = cryptr.encrypt(cardCVC);
 
 	const apiKey = req.headers['x-api-key']?.toString() || '';
-	await VerifyCardOwner(apiKey);
+	await cardService.VerifyCardOwner(apiKey);
+	await cardService.VerifyEmployee(Number(employeeId));
 
 	return res.status(200).send({employeeId, type, cardNumber, cardCVC, date, encryptedCVC});
 }
