@@ -87,6 +87,23 @@ export async function VerifyCardExists(id: number){
 	return cardFound;
 }
 
+function isExpired(month: number, year: number){
+	const [currentMonth, currentYear] = dayjs().format('MM/YY').split('/');
+	if(Number(currentYear) < year) return false;
+	if(Number(currentYear) === year)
+		if(Number(currentMonth) <= month)
+			return false;
+	return true;
+}
+
 export async function ActivateCard(cardId: number, cvc: number, password: string){
-	await VerifyCardExists(cardId);
+	const {expirationDate} = await VerifyCardExists(cardId);
+
+	const [month, year] = expirationDate.split('/');
+	if(isExpired(Number(month), Number(year))) throw{
+		type: 'NotAcceptable', 
+		message: 'Card is expired'
+	};
+
+	
 }
