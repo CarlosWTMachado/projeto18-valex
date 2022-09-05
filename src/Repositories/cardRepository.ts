@@ -30,14 +30,14 @@ export type CardInsertData = Omit<Card, "id">;
 //   return result.rows;
 // }
 
-// export async function findById(id: number) {
-//   const result = await connection.query<Card, [number]>(
-//     "SELECT * FROM cards WHERE id=$1",
-//     [id]
-//   );
+export async function findById(id: number) {
+  const result = await db.query<Card, [number]>(
+    "SELECT * FROM cards WHERE id=$1",
+    [id]
+  );
 
-//   return result.rows[0];
-// }
+  return result.rows[0];
+}
 
 export async function findByTypeAndEmployeeId(type: TransactionTypes, employeeId: number) {
 	const result = await db.query<Card, [TransactionTypes, number]>(
@@ -76,7 +76,7 @@ export async function insert(cardData: CardInsertData) {
     isBlocked,
     type,
   } = cardData;
-  
+
   db.query(
     `
     INSERT INTO cards ("employeeId", number, "cardholderName", "securityCode",
@@ -121,5 +121,6 @@ export async function insert(cardData: CardInsertData) {
 
 export default {
 	findByTypeAndEmployeeId,
-	insert
+	findById,
+	insert,
 };

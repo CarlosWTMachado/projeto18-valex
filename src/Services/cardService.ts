@@ -1,7 +1,7 @@
 import company from '../Repositories/companyRepository';
 import employee from '../Repositories/employeeRepository';
 import {TransactionTypes} from '../Repositories/cardRepository';
-import card from '../Repositories/cardRepository';
+import cards from '../Repositories/cardRepository';
 import { faker } from '@faker-js/faker';
 import Cryptr from 'cryptr';
 import { CRYPTRKEY } from '../environmentVariable';
@@ -26,7 +26,7 @@ export async function VerifyEmployee(id: number) {
 }
 
 export async function VerifyEmployeeCardType(type: TransactionTypes, employeeId: number) {
-	const cardFound = await card.findByTypeAndEmployeeId(type, employeeId);
+	const cardFound = await cards.findByTypeAndEmployeeId(type, employeeId);
 	if(cardFound !== undefined) throw{
 		type: 'Conflict', 
 		message: 'Employee alredy has this card type'
@@ -73,7 +73,20 @@ export async function CreateCard(apiKey: string, employeeId: number, type: Trans
 		type
 	};
 
-	await card.insert(createdCard);
+	await cards.insert(createdCard);
 
 	return({...createdCard, securityCode: cardCVC});
+}
+
+export async function VerifyCardExists(id: number){
+	const cardFound = await cards.findById(id);
+	if(cardFound === undefined) throw{
+		type: 'NotFound', 
+		message: 'Card not found'
+	};
+	return cardFound;
+}
+
+export async function ActivateCard(cardId: number, cvc: number, password: string){
+	await VerifyCardExists(cardId);
 }
