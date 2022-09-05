@@ -97,13 +97,18 @@ function isExpired(month: number, year: number){
 }
 
 export async function ActivateCard(cardId: number, cvc: number, password: string){
-	const {expirationDate} = await VerifyCardExists(cardId);
+	const card = await VerifyCardExists(cardId);
 
-	const [month, year] = expirationDate.split('/');
+	const [month, year] = card.expirationDate.split('/');
 	if(isExpired(Number(month), Number(year))) throw{
-		type: 'NotAcceptable', 
+		type: 'NotAcceptable',
 		message: 'Card is expired'
 	};
 
-	
+	if(card.password !== null) throw{
+		type: 'Conflict',
+		message: 'Card alredy activated'
+	};
+
+	console.log(card.password)
 }
